@@ -1,0 +1,6 @@
+{
+  "name": "StaffSync - Modern Human Resource Management Solution",
+  "description": "Complete MERN-stack HRMS automating workforce management with JWT role-based access for HR, Managers, and Employees across leaves, attendance, announcements, and training.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}

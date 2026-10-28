@@ -1,0 +1,396 @@
+{
+  "info": {
+    "_postman_id": "c1f7a29e-4b82-4113-91a7-staffsync-hrms",
+    "name": "StaffSync - HRMS REST API Collection",
+    "description": "Comprehensive Postman collection for testing StaffSync Modern Human Resource Management Solution with JWT authentication, role guards (HR, Manager, Employee), and all 6 modules.",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    {
+      "key": "baseUrl",
+      "value": "http://localhost:3000/api",
+      "type": "string"
+    },
+    {
+      "key": "authToken",
+      "value": "",
+      "type": "string"
+    }
+  ],
+  "item": [
+    {
+      "name": "1. Authentication & Roles",
+      "item": [
+        {
+          "name": "Get Pre-seeded Demo Accounts",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/auth/demo-accounts",
+              "host": ["{{baseUrl}}"],
+              "path": ["auth", "demo-accounts"]
+            }
+          }
+        },
+        {
+          "name": "Login (HR Administrator)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "var jsonData = pm.response.json();",
+                  "if (jsonData.token) {",
+                  "    pm.collectionVariables.set('authToken', jsonData.token);",
+                  "    pm.test('Token received and stored in collection variable', function() { pm.expect(jsonData.token).to.be.a('string'); });",
+                  "}"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"hr@staffsync.io\",\n  \"password\": \"StaffSync@123\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/auth/login",
+              "host": ["{{baseUrl}}"],
+              "path": ["auth", "login"]
+            }
+          }
+        },
+        {
+          "name": "Login (Team Manager)",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"manager@staffsync.io\",\n  \"password\": \"StaffSync@123\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/auth/login",
+              "host": ["{{baseUrl}}"],
+              "path": ["auth", "login"]
+            }
+          }
+        },
+        {
+          "name": "Login (Staff Employee)",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"alex@staffsync.io\",\n  \"password\": \"StaffSync@123\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/auth/login",
+              "host": ["{{baseUrl}}"],
+              "path": ["auth", "login"]
+            }
+          }
+        },
+        {
+          "name": "Register New Employee",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Jordan Reed\",\n  \"email\": \"jordan.reed@staffsync.io\",\n  \"password\": \"Password@2026\",\n  \"role\": \"employee\",\n  \"department\": \"Product\",\n  \"designation\": \"Product Analyst\",\n  \"phone\": \"+1 (555) 901-2345\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/auth/register",
+              "host": ["{{baseUrl}}"],
+              "path": ["auth", "register"]
+            }
+          }
+        },
+        {
+          "name": "Get Current Authenticated User (Profile)",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "Bearer {{authToken}}" }],
+            "url": {
+              "raw": "{{baseUrl}}/auth/me",
+              "host": ["{{baseUrl}}"],
+              "path": ["auth", "me"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "2. Employee Management (HR Role)",
+      "item": [
+        {
+          "name": "Get All Employees",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "Bearer {{authToken}}" }],
+            "url": {
+              "raw": "{{baseUrl}}/employees",
+              "host": ["{{baseUrl}}"],
+              "path": ["employees"]
+            }
+          }
+        },
+        {
+          "name": "Get Headcount & Department Stats",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "Bearer {{authToken}}" }],
+            "url": {
+              "raw": "{{baseUrl}}/employees/stats/summary",
+              "host": ["{{baseUrl}}"],
+              "path": ["employees", "stats", "summary"]
+            }
+          }
+        },
+        {
+          "name": "Create Employee Profile (HR)",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{authToken}}" },
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Maya Lin\",\n  \"email\": \"maya.lin@staffsync.io\",\n  \"password\": \"Welcome@2026\",\n  \"role\": \"employee\",\n  \"department\": \"Design\",\n  \"designation\": \"UI/UX Specialist\",\n  \"phone\": \"+1 (555) 321-4567\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/employees",
+              "host": ["{{baseUrl}}"],
+              "path": ["employees"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "3. Leave Management",
+      "item": [
+        {
+          "name": "Apply for Leave (Employee)",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{authToken}}" },
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"leaveType\": \"annual\",\n  \"startDate\": \"2026-11-10\",\n  \"endDate\": \"2026-11-12\",\n  \"reason\": \"Attending sibling wedding ceremony.\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/leaves",
+              "host": ["{{baseUrl}}"],
+              "path": ["leaves"]
+            }
+          }
+        },
+        {
+          "name": "Get My Leaves & Balance",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "Bearer {{authToken}}" }],
+            "url": {
+              "raw": "{{baseUrl}}/leaves/my",
+              "host": ["{{baseUrl}}"],
+              "path": ["leaves", "my"]
+            }
+          }
+        },
+        {
+          "name": "Get All Leave Requests (HR / Manager)",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "Bearer {{authToken}}" }],
+            "url": {
+              "raw": "{{baseUrl}}/leaves",
+              "host": ["{{baseUrl}}"],
+              "path": ["leaves"]
+            }
+          }
+        },
+        {
+          "name": "Approve or Reject Leave (HR / Manager)",
+          "request": {
+            "method": "PUT",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{authToken}}" },
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"status\": \"approved\",\n  \"reviewComments\": \"Approved by manager. Have a wonderful time!\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/leaves/lev_01/status",
+              "host": ["{{baseUrl}}"],
+              "path": ["leaves", "lev_01", "status"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "4. Attendance Tracking",
+      "item": [
+        {
+          "name": "Daily Check-In",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{authToken}}" },
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"workMode\": \"office\",\n  \"notes\": \"Arrived at HQ 3rd floor workstation\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/attendance/check-in",
+              "host": ["{{baseUrl}}"],
+              "path": ["attendance", "check-in"]
+            }
+          }
+        },
+        {
+          "name": "Daily Check-Out",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Authorization", "value": "Bearer {{authToken}}" }],
+            "url": {
+              "raw": "{{baseUrl}}/attendance/check-out",
+              "host": ["{{baseUrl}}"],
+              "path": ["attendance", "check-out"]
+            }
+          }
+        },
+        {
+          "name": "Get Today Status",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "Bearer {{authToken}}" }],
+            "url": {
+              "raw": "{{baseUrl}}/attendance/today",
+              "host": ["{{baseUrl}}"],
+              "path": ["attendance", "today"]
+            }
+          }
+        },
+        {
+          "name": "Get All Company Attendance Log",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "Bearer {{authToken}}" }],
+            "url": {
+              "raw": "{{baseUrl}}/attendance",
+              "host": ["{{baseUrl}}"],
+              "path": ["attendance"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "5. Company Announcements",
+      "item": [
+        {
+          "name": "Get All Announcements",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "Bearer {{authToken}}" }],
+            "url": {
+              "raw": "{{baseUrl}}/announcements",
+              "host": ["{{baseUrl}}"],
+              "path": ["announcements"]
+            }
+          }
+        },
+        {
+          "name": "Create Announcement (HR)",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{authToken}}" },
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"title\": \"Q4 Performance Reviews & Salary Calibration Schedule\",\n  \"content\": \"Manager self-evaluations open next Monday. All employee self-reviews must be submitted by the 15th.\",\n  \"priority\": \"high\",\n  \"category\": \"policy\",\n  \"pinned\": true\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/announcements",
+              "host": ["{{baseUrl}}"],
+              "path": ["announcements"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "6. Training & Development",
+      "item": [
+        {
+          "name": "Get All Training Programs",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "Bearer {{authToken}}" }],
+            "url": {
+              "raw": "{{baseUrl}}/trainings",
+              "host": ["{{baseUrl}}"],
+              "path": ["trainings"]
+            }
+          }
+        },
+        {
+          "name": "Create Training Program (Manager / HR)",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{authToken}}" },
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"title\": \"Full-Stack React 19 & Next-Gen State Management\",\n  \"description\": \"Comprehensive workshop on React 19 hooks, server actions, and optimistic rendering patterns.\",\n  \"category\": \"Engineering\",\n  \"instructor\": \"StaffSync Engineering Guild\",\n  \"startDate\": \"2026-11-01\",\n  \"endDate\": \"2026-11-20\",\n  \"durationHours\": 18\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/trainings",
+              "host": ["{{baseUrl}}"],
+              "path": ["trainings"]
+            }
+          }
+        },
+        {
+          "name": "Assign Employees to Program (Manager)",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{authToken}}" },
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"employeeIds\": [\"usr_emp_01\", \"usr_emp_02\"]\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/trainings/trn_01/assign",
+              "host": ["{{baseUrl}}"],
+              "path": ["trainings", "trn_01", "assign"]
+            }
+          }
+        }
+      ]
+    }
+  ]
+}
